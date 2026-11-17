@@ -25,4 +25,9 @@ SurfaceMesh texture_seams_mesh();
 // a mesh with a non-manifold vertex
 SurfaceMesh non_manifold_vertex();
 
+// generate a unit icosphere with a smooth localized radial bump around the
+// +z pole, creating strong curvature variation between the bump region and
+// the remaining spherical surface
+SurfaceMesh bumpy_sphere();
+
 } // namespace pmp

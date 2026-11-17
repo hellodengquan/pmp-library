@@ -3,6 +3,9 @@
 
 #include "helpers.h"
 
+#include <algorithm>
+#include <cmath>
+
 #include "pmp/algorithms/shapes.h"
 
 namespace pmp {
@@ -188,6 +191,29 @@ SurfaceMesh non_manifold_vertex()
     mesh.add_triangle(v1, v4, v6);
     mesh.add_triangle(v3, v6, v2);
     mesh.add_triangle(v1, v6, v5);
+
+    return mesh;
+}
+
+SurfaceMesh bumpy_sphere()
+{
+    auto mesh = icosphere(4);
+
+    // smooth Gaussian bump around the +z pole: displaces vertices radially,
+    // creating a localized region of high curvature on a unit sphere
+    const Point bump_dir(0.0, 0.0, 1.0);
+    const Scalar amplitude = 0.4;
+    const Scalar width = 0.35; // angular width in radians
+
+    for (auto v : mesh.vertices())
+    {
+        Point p = mesh.position(v);
+        const Scalar cosine =
+            std::clamp<Scalar>(dot(normalize(p), bump_dir), -1.0, 1.0);
+        const Scalar t = std::acos(cosine) / width;
+        p *= (1.0 + amplitude * std::exp(-t * t));
+        mesh.position(v) = p;
+    }
 
     return mesh;
 }
